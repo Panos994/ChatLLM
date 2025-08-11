@@ -162,8 +162,8 @@ java -jar target/chatllm-*.jar
 
 
 
-## 👨‍💻 Panos Foteinopoulos
+## 👨‍💻 Author
 
-**Your Name**
-- GitHub: [@your-username](https://github.com/your-username)
-- Email: your-email@example.com
+**Panos Foteinopoulos**
+- GitHub: (https://github.com/Panos994)
+
