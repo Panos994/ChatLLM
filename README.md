@@ -1,6 +1,6 @@
 # ChatLLM - Spring Boot Chat Application
 
-Μια Spring Boot εφαρμογή για chat με JWT authentication και train LLM model.
+ Spring Boot εφαρμογή για chat με JWT authentication & train LLM μοντέλου.
 
 ## 🚀 Features
 
