@@ -1,6 +1,8 @@
 # ChatLLM - Spring Boot Chat Application
 
-Μια Spring Boot εφαρμογή για chat με JWT authentication και integration με LLM models.
+
+ Spring Boot εφαρμογή για chat με JWT authentication & train LLM μοντέλου.
+
 
 ## 🚀 Features
 
@@ -160,12 +162,10 @@ java -jar target/chatllm-*.jar
 4. Push στο branch (`git push origin feature/amazing-feature`)
 5. Άνοιξε Pull Request
 
-## 📄 License
-
-Αυτό το project είναι licensed υπό την MIT License - δες το [LICENSE](LICENSE) αρχείο για λεπτομέρειες.
 
 ## 👨‍💻 Author
 
-**Your Name**
-- GitHub: [@your-username](https://github.com/your-username)
-- Email: your-email@example.com
+**Panos Foteinopoulos**
+- GitHub: (https://github.com/Panos994)
+
+
