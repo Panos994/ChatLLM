@@ -1,6 +1,8 @@
 # ChatLLM - Spring Boot Chat Application
 
+
  Spring Boot εφαρμογή για chat με JWT authentication & train LLM μοντέλου.
+
 
 ## 🚀 Features
 
@@ -161,9 +163,9 @@ java -jar target/chatllm-*.jar
 5. Άνοιξε Pull Request
 
 
-
 ## 👨‍💻 Author
 
 **Panos Foteinopoulos**
 - GitHub: (https://github.com/Panos994)
+
 

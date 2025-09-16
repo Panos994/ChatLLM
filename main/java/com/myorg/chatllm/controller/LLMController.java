@@ -8,46 +8,63 @@ import com.myorg.chatllm.entity.TrainingData;
 import com.myorg.chatllm.repository.TrainingDataRepository;
 import com.myorg.chatllm.service.LLMService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/llm")
 public class LLMController {
 
     private final LLMService llmService;
-    private final TrainingDataRepository trainingDataRepository; // optional, can be null if not using
+    //private final TrainingDataRepository trainingDataRepository; // optional, can be null if not using
 
-    public LLMController(LLMService llmService, TrainingDataRepository trainingDataRepository) {
+    public LLMController(LLMService llmService) {
         this.llmService = llmService;
-        this.trainingDataRepository = trainingDataRepository;
-    }
 
+    }
     @PostMapping("/train")
-    public ResponseEntity<?> train(@RequestBody TrainRequest request) {
-        List<String> samples = request.getSamples();
-        if (samples == null || samples.isEmpty()) {
-            return ResponseEntity.badRequest().body("No samples provided");
-        }
-        // optionally save samples to DB
-        if (trainingDataRepository != null) {
-            for (String s : samples) {
-                TrainingData td = new TrainingData();
-                td.setSample(s);
-                trainingDataRepository.save(td);
-            }
-        }
+    public ResponseEntity<?> train(@RequestBody List<String> samples) {
+        if (samples == null || samples.isEmpty()) return ResponseEntity.badRequest().body(Map.of("error", "No samples"));
         llmService.train(samples);
-        return ResponseEntity.ok("Trained on " + samples.size() + " samples. Vocab size: " + llmService.vocabSize());
+        return ResponseEntity.ok(Map.of("status", "trained", "vocab", llmService.vocabSize()));
     }
 
     @PostMapping("/generate")
-    public ResponseEntity<GenerateResponse> generate(@RequestBody GenerateRequest req) {
-        String out = llmService.generate(req.getPrompt() == null ? "" : req.getPrompt(), req.getMaxTokens() == null ? 20 : req.getMaxTokens());
-        return ResponseEntity.ok(new GenerateResponse(out));
+    public ResponseEntity<?> generate(@RequestBody Map<String, Object> body) {
+        String prompt = (String) body.getOrDefault("prompt", "");
+        int maxTokens = ((Number) body.getOrDefault("maxTokens", 20)).intValue();
+        Double temp = body.containsKey("temperature") ? ((Number) body.get("temperature")).doubleValue() : null;
+        String out = llmService.generate(prompt, maxTokens, temp);
+        return ResponseEntity.ok(Map.of("generated", out));
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<?> info() {
+        return ResponseEntity.ok(llmService.info());
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<?> save(@RequestBody Map<String,String> body) {
+        String path = body.getOrDefault("path", "mymodel.ser");
+        try {
+            llmService.saveModel(path);
+            return ResponseEntity.ok(Map.of("saved", path));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/load")
+    public ResponseEntity<?> load(@RequestBody Map<String,String> body) {
+        String path = body.getOrDefault("path", "mymodel.ser");
+        try {
+            llmService.loadModel(path);
+            return ResponseEntity.ok(Map.of("loaded", path, "vocab", llmService.vocabSize()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
     }
 }

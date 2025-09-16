@@ -1,42 +1,47 @@
 package com.myorg.chatllm.entity;
 
 
+import java.io.Serializable;
 import java.util.*;
 
 
-public class Tokenizer {
+public class Tokenizer implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Map<String, Integer> wordToIndex = new HashMap<>();
     private final Map<Integer, String> indexToWord = new HashMap<>();
     private int indexCounter = 0;
 
     // simple normalization: lowercase & remove extra punctuation except sentence-enders
+//    private String normalize(String token) {
+//        return token.strip().replaceAll("[^a-zA-Z0-9Α-Ωα-ωάέήίόύώϊϋΰΆΈΉΊΌΎΏ΄΄-]", "");
+//    }
     private String normalize(String token) {
-        return token.strip().replaceAll("[^a-zA-Z0-9Α-Ωα-ωάέήίόύώϊϋΰΆΈΉΊΌΎΏ΄΄-]", "");
+        return token.strip().replaceAll("[^\\p{L}\\p{Nd}\\-']", "").toLowerCase();
     }
 
     public List<Integer> tokenize(String text) {
         List<Integer> tokens = new ArrayList<>();
         if (text == null || text.isBlank()) return tokens;
-        String[] parts = text.toLowerCase().split("\\s+");
+        String[] parts = text.split("\\s+");
         for (String raw : parts) {
-            String word = normalize(raw);
-            if (word.isEmpty()) continue;
-            Integer idx = wordToIndex.get(word);
+            String w = normalize(raw);
+            if (w.isEmpty()) continue;
+            Integer idx = wordToIndex.get(w);
             if (idx == null) {
                 idx = indexCounter++;
-                wordToIndex.put(word, idx);
-                indexToWord.put(idx, word);
+                wordToIndex.put(w, idx);
+                indexToWord.put(idx, w);
             }
             tokens.add(idx);
         }
         return tokens;
     }
 
-    public List<List<Integer>> tokenizeBatch(List<String> texts) {
-        List<List<Integer>> batch = new ArrayList<>();
-        for (String t : texts) batch.add(tokenize(t));
-        return batch;
-    }
+//    public List<List<Integer>> tokenizeBatch(List<String> texts) {
+//        List<List<Integer>> batch = new ArrayList<>();
+//        for (String t : texts) batch.add(tokenize(t));
+//        return batch;
+//    }
 
     public String detokenize(List<Integer> tokens) {
         StringBuilder sb = new StringBuilder();
@@ -49,9 +54,8 @@ public class Tokenizer {
         return sb.toString();
     }
 
-    public Optional<String> getWord(int index) {
-        return Optional.ofNullable(indexToWord.get(index));
-    }
+    public Optional<String> getWord(int idx) { return Optional.ofNullable(indexToWord.get(idx)); }
+
 
     public int vocabularySize() {
         return wordToIndex.size();
